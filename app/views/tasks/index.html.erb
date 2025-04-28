@@ -1,5 +1,36 @@
 <h1>Tasks</h1>
 
+<div class="filters">
+  <%= form_tag tasks_path, method: :get, class: 'filter-form' do %>
+    <div class="filter-group">
+      <%= label_tag :status, 'Status:' %>
+      <%= select_tag :status, options_for_select([['All', ''], ['Completed', true], ['Pending', false]], params[:status]), class: 'form-control' %>
+    </div>
+
+    <div class="filter-group">
+      <%= label_tag :due_date, 'Due before:' %>
+      <%= date_field_tag :due_date, params[:due_date], class: 'form-control' %>
+    </div>
+
+    <div class="filter-group">
+      <%= label_tag :tag, 'Tag:' %>
+      <%= select_tag :tag, options_for_select([['All', '']] + Tag.pluck(:name).map { |name| [name, name] }, params[:tag]), class: 'form-control' %>
+    </div>
+
+    <div class="filter-group">
+      <%= label_tag :sort, 'Sort by:' %>
+      <%= select_tag :sort, options_for_select([
+        ['Created date', ''],
+        ['Due date', 'due_date'],
+        ['Title', 'title'],
+        ['Status', 'status']
+      ], params[:sort]), class: 'form-control' %>
+    </div>
+
+    <%= submit_tag 'Apply Filters', class: 'btn btn-primary' %>
+  <% end %>
+</div>
+
 <table>
   <thead>
     <tr>
@@ -27,6 +58,10 @@
     <% end %>
   </tbody>
 </table>
+
+<div class="pagination">
+  <%= paginate @tasks %>
+</div>
 
 <br>
 

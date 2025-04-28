@@ -2,7 +2,31 @@ class TasksController < ApplicationController
   before_action :set_task, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @tasks = Task.all
+    @tasks = Task.includes(:tags)
+
+    # Filter by status
+    @tasks = @tasks.where(status: params[:status]) if params[:status].present?
+
+    # Filter by due date
+    @tasks = @tasks.where("due_date <= ?", params[:due_date]) if params[:due_date].present?
+
+    # Filter by tag
+    @tasks = @tasks.joins(:tags).where(tags: { name: params[:tag] }) if params[:tag].present?
+
+    # Sort
+    case params[:sort]
+    when "due_date"
+      @tasks = @tasks.order(due_date: :asc)
+    when "title"
+      @tasks = @tasks.order(title: :asc)
+    when "status"
+      @tasks = @tasks.order(status: :desc)
+    else
+      @tasks = @tasks.order(created_at: :desc)
+    end
+
+    # Pagination
+    @tasks = @tasks.page(params[:page]).per(10)
   end
 
   def show
