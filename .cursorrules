@@ -1,0 +1,18 @@
+# .cursorrules
+version: 1.0
+
+# Code style
+style:
+  typescript:
+    semi: false # No semicolons
+    singleQuote: true # Use single quotes
+    tabWidth: 2 # Indentation width
+
+# Component standards 
+components:
+  - Use functional components
+  - Use CSS Modules or Tailwind
+
+# File organization
+structure:
+  - Related components in same directory
