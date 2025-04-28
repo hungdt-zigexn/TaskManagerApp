@@ -7,6 +7,7 @@
       <th>Description</th>
       <th>Status</th>
       <th>Due date</th>
+      <th>Tags</th>
       <th colspan="3">Actions</th>
     </tr>
   </thead>
@@ -18,6 +19,7 @@
         <td><%= task.description %></td>
         <td><%= task.status ? 'Completed' : 'Pending' %></td>
         <td><%= task.due_date %></td>
+        <td><%= task.tag_list %></td>
         <td><%= link_to 'Show', task %></td>
         <td><%= link_to 'Edit', edit_task_path(task) %></td>
         <td><%= link_to 'Delete', task, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %></td>
