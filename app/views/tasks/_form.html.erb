@@ -30,6 +30,11 @@
     <%= form.date_field :due_date %>
   </div>
 
+  <div class="field">
+    <%= form.label :tag_list, "Tags (separated by commas)" %>
+    <%= form.text_field :tag_list %>
+  </div>
+
   <div class="actions">
     <%= form.submit %>
   </div>
