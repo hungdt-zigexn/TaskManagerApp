@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/rails
+      - bundle:/usr/local/bundle
+      - sqlite_data:/rails/storage
+      - node_modules:/rails/node_modules
+      - tmp:/rails/tmp
+    environment:
+      - RAILS_ENV=development
+      - PORT=3000
+      - RUBY_DEBUG_OPEN=true
+      - RUBY_DEBUG_LAZY=true
+      - BINDING=0.0.0.0
+    command: sh -c "rm -f tmp/pids/server.pid && gem install foreman && ./bin/dev"
+    stdin_open: true
+    tty: true
+
+volumes:
+  sqlite_data:
+  bundle:
+  node_modules:
+  tmp: 
