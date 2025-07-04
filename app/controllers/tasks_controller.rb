@@ -2,41 +2,33 @@ class TasksController < ApplicationController
   before_action :set_task, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @tasks = Task.includes(:tags)
+    @tasks = Task.includes(:tags, :taggings)
+                 .by_status(params[:status])
+                 .due_before(params[:due_date])
+                 .by_tag(params[:tag])
+                 .sort_by_field(params[:sort])
+                 .page(params[:page])
+                 .per(10)
 
-    # Filter by status
-    @tasks = @tasks.where(status: params[:status]) if params[:status].present?
-
-    # Filter by due date
-    @tasks = @tasks.where("due_date <= ?", params[:due_date]) if params[:due_date].present?
-
-    # Filter by tag
-    @tasks = @tasks.joins(:tags).where(tags: { name: params[:tag] }) if params[:tag].present?
-
-    # Sort
-    case params[:sort]
-    when "due_date"
-      @tasks = @tasks.order(due_date: :asc)
-    when "title"
-      @tasks = @tasks.order(title: :asc)
-    when "status"
-      @tasks = @tasks.order(status: :desc)
-    else
-      @tasks = @tasks.order(created_at: :desc)
-    end
-
-    # Pagination
-    @tasks = @tasks.page(params[:page]).per(10)
+    # Preload counts for performance metrics
+    @total_tasks = Task.count
+    @completed_tasks = Task.by_status(true).count
+    @pending_tasks = Task.by_status(false).count
   end
 
   def show
+    # @task already includes tags from set_task method
   end
 
   def new
     @task = Task.new
+    # Preload available tags for the form
+    @available_tags = Tag.order(:name)
   end
 
   def edit
+    # Preload available tags for the form
+    @available_tags = Tag.order(:name)
   end
 
   def create
@@ -45,6 +37,7 @@ class TasksController < ApplicationController
     if @task.save
       redirect_to @task, notice: "Task was successfully created."
     else
+      @available_tags = Tag.order(:name)
       render :new, status: :unprocessable_entity
     end
   end
@@ -53,6 +46,7 @@ class TasksController < ApplicationController
     if @task.update(task_params)
       redirect_to @task, notice: "Task was successfully updated."
     else
+      @available_tags = Tag.order(:name)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -65,7 +59,7 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.find(params[:id])
+    @task = Task.includes(:tags).find(params[:id])
   end
 
   def task_params
