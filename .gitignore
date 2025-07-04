@@ -1,0 +1,4 @@
+/tmp
+master.key
+*.log
+*.sqlite3
