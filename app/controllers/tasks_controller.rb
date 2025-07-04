@@ -17,8 +17,7 @@ class TasksController < ApplicationController
   end
 
   def show
-    # Eager load tags for the show view
-    @task = @task.includes(:tags)
+    # @task already includes tags from set_task method
   end
 
   def new
